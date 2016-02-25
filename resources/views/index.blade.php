@@ -42,10 +42,18 @@
                                             {{-- GET IF THE CURRENT TIME IS WITHIN THE TIME UNTIL --}}
                                             <?php $now          = new \DateTime('now', new DateTimeZone('Asia/Manila'));  ?>
                                             <?php $timeUntil    = new \DateTime($sched->time_until, new DateTimeZone('Asia/Manila')); ?>
-                                            <?php $timeFrom     = new \DateTime($sched->time_from, new DateTimeZone('Asia/Manila')); ?>
-                                            <?php $interval     = $now->diff($timeUntil); ?>
 
-                                            Schedule: {{$timeFrom->format('M d Y H:i')}} - {{$timeUntil->format('M d Y H:i')}}
+                                            @if( $now > $timeUntil)
+                                                <?php $interval = $now->diff($timeUntil); ?>
+                                                
+                                                @if($interval->format('%h') == 0)
+                                                    currently playing
+                                                @else
+                                                    {{ $interval->format('%h hour ago')}}
+                                                @endif
+                                            @else
+                                                in {{$timeUntil->format('H')}} hours
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

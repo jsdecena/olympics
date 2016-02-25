@@ -11,7 +11,7 @@ class ScheduleTableSeeder extends Seeder
      */
     public function run()
     {
-        $time = new \DateTime('today');
+        $time = new \DateTime('now', new DateTimeZone('Asia/Manila'));
 
         App\Models\Schedule::create([
             'team1'          => 'USA',
