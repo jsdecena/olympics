@@ -11,28 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return redirect()->to('admin');
-});
+Route::resource('/',                   'IndexController');
 
-Route::group(['prefix' => 'admin', 'middleware' => ['auth'] ], function () {
-    
-    Route::resource('/',                       'Admin\AdminController');
-
-    Route::group(['middleware' => ['role:admin']], function()
-    {
-        Route::resource('user',                       'Admin\UserController');
-        Route::resource('role',                       'Admin\RoleController');
-    });
-});
 
 Route::group(['prefix' => 'api/v1' ], function () {
-    
-    Route::resource('authenticate', 'Api\AuthenticateController');
-
-    Route::group(['middleware' => ['jwt.auth']], function(){
-        Route::resource('user',                       'Api\UserApiController');
-    });
+    Route::resource('sports',                     'Api\SportsApiController');
+    Route::resource('user',                       'Api\UserApiController');
+    Route::resource('schedule',                   'Api\ScheduleApiController');
 });
-
-Route::controllers(['auth' => 'Auth\AuthController']);
