@@ -17,72 +17,47 @@ class ScheduleApiController extends Controller
      */
     public function index()
     {
-        return Schedule::all();
-    }
+        $schedule  = Schedule::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        $data = [];
+        foreach ($schedule as $key => $value) {
+            
+            $data[$key]['team1']        = $value->team1;
+            $data[$key]['team2']        = $value->team2;
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+            //GET THE TIME NOW
+            $now          = new \DateTime('now', new \DateTimeZone('Asia/Manila'));
+            $time         = new \DateTime($value->time_until, new \DateTimeZone('Asia/Manila'));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+            $data[$key]['team1_score']      = $value->team1_score;
+            $data[$key]['team2_score']      = $value->team2_score;
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+            if ($value->team1_score > $value->team2_score) {
+                $data[$key]['winner']           = $value->team1 . " def " . $value->team2;
+            }elseif($value->team1_score == $value->team2_score){
+                $data[$key]['winner'] = null;
+            }else{
+                $data[$key]['winner'] = $value->team2 . " def " . $value->team1;
+            }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+            $interval = $now->diff($time);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            //GET THE SCHEDULE
+            if ($now > $time) {
+               //past
+                if ($interval->format('%h') == 0) {
+                    $data[$key]['status']   = 'currently playing';
+                }else{
+                    $data[$key]['status']   = $interval->format('%h hour ago');
+                }
+            
+            }else{
+                
+                //future
+                $data[$key]['status']       = 'playing in ' . $time->format('H') . ' hours';
+            }   
+        }
+
+        return response()->json($data);
     }
 }
